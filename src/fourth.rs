@@ -17,11 +17,11 @@ struct Node<T> {
 
 impl<T> Node<T> {
     fn new(elem: T) -> Rc<RefCell<Self>> {
-        return Rc::new(RefCell::new(Node {
-            elem: elem,
+        Rc::new(RefCell::new(Node {
+            elem,
             prev: None,
             next: None,
-        }));
+        }))
     }
 }
 
@@ -33,7 +33,7 @@ impl<T> List<T> {
         }
     }
 
-    pub fn push_front(&mut self, elem: T) -> () {
+    pub fn push_front(&mut self, elem: T) {
         let new_head = Node::new(elem);
         match self.head.take() {
             Some(old_head) => {
@@ -64,7 +64,7 @@ impl<T> List<T> {
     }
 
     pub fn pop_back(&mut self) -> Option<T> {
-        return self.tail.take().map(|old_tail| {
+        self.tail.take().map(|old_tail| {
             match old_tail.borrow_mut().prev.take() {
                 Some(new_tail) => {
                     new_tail.borrow_mut().next.take();
@@ -75,11 +75,11 @@ impl<T> List<T> {
                 }
             }
             Rc::try_unwrap(old_tail).ok().unwrap().into_inner().elem
-        });
+        })
     }
 
     pub fn pop_front(&mut self) -> Option<T> {
-        return self.head.take().map(|old_head| {
+        self.head.take().map(|old_head| {
             match old_head.borrow_mut().next.take() {
                 Some(new_head) => {
                     new_head.borrow_mut().prev.take();
@@ -90,7 +90,7 @@ impl<T> List<T> {
                 }
             }
             Rc::try_unwrap(old_head).ok().unwrap().into_inner().elem
-        });
+        })
     }
 
     pub fn peek_front(&self) -> Option<Ref<T>> {

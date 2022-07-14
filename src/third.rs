@@ -11,7 +11,7 @@ impl<T> List<T> {
 
     pub fn prepend(&self, elem: T) -> List<T> {
         List { head: Some(Rc::new(Node {
-            elem: elem,
+            elem,
             next: self.head.clone()
         }))}
     }
@@ -30,7 +30,7 @@ impl<T> List<T> {
 }
 
 impl<T> Drop for List<T> {
-    fn drop(&mut self) -> () {
+    fn drop(&mut self) {
         let mut head = self.head.take();
         while let Some(node) = head {
             if let Ok(mut node) = Rc::try_unwrap(node) {
@@ -57,10 +57,10 @@ impl<'a, T> Iterator for Iter<'a, T> {
     type Item = &'a T;
 
     fn next(&mut self) -> Option<Self::Item> {
-        return self.next.map(|node| {
+        self.next.map(|node| {
             self.next = node.next.as_deref();
             &node.elem
-        });
+        })
     }
 }
 
@@ -69,7 +69,7 @@ mod test {
     use super::List;
 
     #[test]
-    fn basics() -> () {
+    fn basics() {
         let list = List::new();
         assert_eq!(list.head(), None);
 
@@ -91,7 +91,7 @@ mod test {
     }
 
     #[test]
-    fn iter() -> () {
+    fn iter() {
         let list = List::new().prepend(1).prepend(2).prepend(3);
 
         let mut iter = list.iter();

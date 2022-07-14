@@ -7,9 +7,9 @@ impl List {
         List { head: Link::Empty }
     }
 
-    pub fn push(&mut self, elem: i32) -> () {
+    pub fn push(&mut self, elem: i32) {
         let new_node = Box::new(Node {
-            elem: elem,
+            elem,
             next: std::mem::replace(&mut self.head, Link::Empty),
         });
 
@@ -18,10 +18,10 @@ impl List {
 
     pub fn pop(&mut self) -> Option<i32> {
         match std::mem::replace(&mut self.head, Link::Empty) {
-            Link::Empty => { return None; },
+            Link::Empty => { None },
             Link::More(node) => {
                 self.head = node.next;
-                return Some(node.elem);
+                Some(node.elem)
             }
         }
     }

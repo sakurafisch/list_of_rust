@@ -7,9 +7,9 @@ impl<T> List<T> {
         List { head: None }
     }
 
-    pub fn push(&mut self, elem: T) -> () {
+    pub fn push(&mut self, elem: T) {
         let new_node = Box::new(Node {
-            elem: elem,
+            elem,
             next: self.head.take()
         });
 
@@ -17,10 +17,10 @@ impl<T> List<T> {
     }
 
     pub fn pop(&mut self) -> Option<T> {
-        return self.head.take().map(|node| {
+        self.head.take().map(|node| {
             self.head = node.next;
             node.elem
-        });
+        })
     }
 
     pub fn peek(&self) -> Option<&T> {
@@ -49,7 +49,7 @@ impl<T> List<T> {
 }
 
 impl<T> Drop for List<T> {
-    fn drop(&mut self) -> () {
+    fn drop(&mut self) {
         let mut cur_link = self.head.take();
         while let Some(mut boxed_node) = cur_link {
             cur_link = boxed_node.next.take();
@@ -81,10 +81,10 @@ pub struct Iter<'a, T> {
 impl<'a, T> Iterator for Iter<'a, T> {
     type Item = &'a T;
     fn next(&mut self) -> Option<Self::Item> {
-        return self.next.map(|node| {
+        self.next.map(|node| {
             self.next = node.next.as_deref();
             &node.elem
-        });
+        })
     }
 }
 
@@ -96,10 +96,10 @@ impl<'a, T> Iterator for IterMut<'a, T> {
     type Item = &'a mut T;
 
     fn next(&mut self) -> Option<Self::Item> {
-        return self.next.take().map(|node| {
+        self.next.take().map(|node| {
             self.next = node.next.as_deref_mut();
             &mut node.elem
-        });
+        })
     }
 }
 
@@ -108,7 +108,7 @@ mod test {
     use super::List;
 
     #[test]
-    fn basics() -> () {
+    fn basics() {
         let mut list = List::new();
         // Check empty list behaves right
         assert_eq!(list.pop(), None);
@@ -136,7 +136,7 @@ mod test {
     }
 
     #[test]
-    fn peek() -> () {
+    fn peek() {
         let mut list = List::new();
         assert_eq!(list.peek(), None);
         assert_eq!(list.peek_mut(), None);
@@ -154,7 +154,7 @@ mod test {
     }
 
     #[test]
-    fn into_iter() -> () {
+    fn into_iter() {
         let mut list = List::new();
         list.push(1); list.push(2); list.push(3);
 
@@ -177,7 +177,7 @@ mod test {
     }
 
     #[test]
-    fn iter_mut() -> () {
+    fn iter_mut() {
         let mut list = List::new();
         list.push(1); list.push(2); list.push(3);
 
